@@ -149,5 +149,29 @@ const logout = (req, res) => {
   res.clearCookie('refreshToken');
   res.status(200).json({ message: '✅ Logged out successfully' });
 };
+// GET CURRENT USER
+const getMe = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.id, u.username, u.email, u.role, u.created_at,
+              p.full_name, p.bio, p.headline, p.location,
+              p.avatar_url, p.cover_url, p.github_url,
+              p.website_url, p.skills, p.open_to_work
+       FROM users u
+       LEFT JOIN profiles p ON u.id = p.user_id
+       WHERE u.id = $1`,
+      [req.user.id]
+    );
 
-module.exports = { register, login, logout };
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ user: result.rows[0] });
+
+  } catch (error) {
+    console.error('GetMe error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+module.exports = { register, login, logout, getMe};
