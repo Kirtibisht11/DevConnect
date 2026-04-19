@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MapPin, Github, Globe, Edit3, UserPlus, UserMinus } from 'lucide-react';
+import { MapPin, Globe, Edit3, UserPlus, UserMinus } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import PostCard from '../components/post/PostCard';
 import api from '../api/axios';
@@ -188,7 +188,7 @@ export default function Profile() {
                   {profile?.github_url && (
                     <a href={profile.github_url} target="_blank" rel="noreferrer"
                       className="flex items-center gap-1 hover:text-indigo-600 transition">
-                      <Github size={14} /> GitHub
+                      <Globe size={14} /> GitHub
                     </a>
                   )}
                   {profile?.website_url && (
