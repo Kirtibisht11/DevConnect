@@ -3,20 +3,18 @@ const pool = require('../db');
 // FOLLOW / UNFOLLOW
 const toggleFollow = async (req, res) => {
   try {
-    const { id } = req.params; // user to follow
+    const { id } = req.params;
     const followerId = req.user.id;
 
     if (id === followerId) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
 
-    // Check user exists
     const user = await pool.query('SELECT id FROM users WHERE id = $1', [id]);
     if (user.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if already following
     const existing = await pool.query(
       'SELECT * FROM follows WHERE follower_id = $1 AND following_id = $2',
       [followerId, id]
@@ -33,6 +31,13 @@ const toggleFollow = async (req, res) => {
     await pool.query(
       'INSERT INTO follows (follower_id, following_id) VALUES ($1, $2)',
       [followerId, id]
+    );
+
+    // Create follow notification
+    await pool.query(
+      `INSERT INTO notifications (recipient_id, sender_id, type)
+       VALUES ($1, $2, 'follow')`,
+      [id, followerId]
     );
 
     res.status(201).json({ message: '✅ Following!', following: true });

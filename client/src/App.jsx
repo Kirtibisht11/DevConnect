@@ -2,13 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import useAuthStore from './store/authStore';
 
-// Pages (we'll create these next)
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
-
-// Protected route wrapper
+import Search from './pages/Search';
+import Notifications from './pages/Notifications';
 const ProtectedRoute = ({ children }) => {
   const { accessToken } = useAuthStore();
   return accessToken ? children : <Navigate to="/login" />;
@@ -36,6 +35,16 @@ function App() {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route path="/search" element={
+          <ProtectedRoute>
+            <Search />
+          </ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+  <ProtectedRoute>
+    <Notifications />
+  </ProtectedRoute>
+} />
       </Routes>
     </BrowserRouter>
   );

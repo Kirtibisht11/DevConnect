@@ -139,7 +139,6 @@ const updatePost = async (req, res) => {
     const { id } = req.params;
     const { content, code_snippet, language } = req.body;
 
-    // Check post exists and belongs to user
     const existing = await pool.query(
       'SELECT * FROM posts WHERE id = $1', [id]
     );
@@ -206,6 +205,12 @@ const toggleLike = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Get post to find owner
+    const post = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
+    if (post.rows.length === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
     const existing = await pool.query(
       'SELECT * FROM likes WHERE post_id = $1 AND user_id = $2',
       [id, req.user.id]
@@ -223,6 +228,15 @@ const toggleLike = async (req, res) => {
       'INSERT INTO likes (post_id, user_id) VALUES ($1, $2)',
       [id, req.user.id]
     );
+
+    // Create notification (only if liker is not the post owner)
+    if (post.rows[0].user_id !== req.user.id) {
+      await pool.query(
+        `INSERT INTO notifications (recipient_id, sender_id, type, entity_id)
+         VALUES ($1, $2, 'like', $3)`,
+        [post.rows[0].user_id, req.user.id, id]
+      );
+    }
 
     res.status(201).json({ message: '✅ Post liked!', liked: true });
 
@@ -242,12 +256,27 @@ const addComment = async (req, res) => {
       return res.status(400).json({ message: 'Comment content is required' });
     }
 
+    // Get post to find owner
+    const post = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
+    if (post.rows.length === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
     const result = await pool.query(
       `INSERT INTO comments (post_id, user_id, content)
        VALUES ($1, $2, $3)
        RETURNING *`,
       [id, req.user.id, content]
     );
+
+    // Create notification (only if commenter is not the post owner)
+    if (post.rows[0].user_id !== req.user.id) {
+      await pool.query(
+        `INSERT INTO notifications (recipient_id, sender_id, type, entity_id)
+         VALUES ($1, $2, 'comment', $3)`,
+        [post.rows[0].user_id, req.user.id, id]
+      );
+    }
 
     res.status(201).json({
       message: '✅ Comment added!',

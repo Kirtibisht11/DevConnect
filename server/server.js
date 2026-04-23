@@ -27,7 +27,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/posts', require('./routes/posts'));
 app.use('/api/search', require('./routes/search'));
-
+app.use('/api/notifications', require('./routes/notifications'));
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
