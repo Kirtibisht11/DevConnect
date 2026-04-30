@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Heart, MessageCircle, UserPlus, Bell } from 'lucide-react';
+import { Heart, MessageCircle, UserPlus, Bell, Briefcase} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import Navbar from '../components/layout/Navbar';
@@ -10,15 +10,19 @@ const getNotificationIcon = (type) => {
     case 'like': return <Heart size={16} className="text-red-500" />;
     case 'comment': return <MessageCircle size={16} className="text-blue-500" />;
     case 'follow': return <UserPlus size={16} className="text-green-500" />;
+    case 'job_follow': return <Briefcase size={16} className="text-indigo-500" />;
+    case 'job_match': return <Briefcase size={16} className="text-orange-500" />;
     default: return <Bell size={16} className="text-gray-500" />;
   }
 };
 
-const getNotificationText = (type) => {
-  switch (type) {
+const getNotificationText = (n) => {
+  switch (n.type) {
     case 'like': return 'liked your post';
     case 'comment': return 'commented on your post';
     case 'follow': return 'started following you';
+    case 'job_follow': return `posted a new job: ${n.job_title} at ${n.job_company}`;
+    case 'job_match': return `posted a job matching your skills: ${n.job_title} at ${n.job_company}`;
     default: return 'sent you a notification';
   }
 };
@@ -82,7 +86,7 @@ export default function Notifications() {
                     <Link to={`/profile/${n.sender_id}`} className="font-semibold hover:underline">
                       {n.sender_username}
                     </Link>
-                    {' '}{getNotificationText(n.type)}
+                    {' '}{getNotificationText(n)}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
                     {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}

@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Search, Bell, User, LogOut, Code2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
-
+import { Home, Search, Bell, User, LogOut, Code2, Briefcase } from 'lucide-react';
 export default function Navbar() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -35,7 +34,10 @@ export default function Navbar() {
             <span className="text-xs">Profile</span>
           </Link>
         </div>
-
+<Link to="/jobs" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
+  <Briefcase size={20} />
+  <span className="text-xs">Jobs</span>
+</Link>
         {/* User + Logout */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
