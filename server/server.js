@@ -29,8 +29,10 @@ app.use('/api/posts', require('./routes/posts'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/jobs', require('./routes/jobs'));
-
-
+app.use('/api/bookmarks', require('./routes/bookmarks'));
+app.use('/api/messages', require('./routes/messages'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/upload', require('./routes/upload'));
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

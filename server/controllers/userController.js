@@ -33,7 +33,6 @@ const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Only allow users to update their own profile
     if (req.user.id !== id) {
       return res.status(403).json({ message: 'Not authorized to update this profile' });
     }
@@ -75,4 +74,29 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { getUserById, updateProfile };
+// PEOPLE YOU MAY KNOW
+const getSuggestions = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.id, u.username,
+              pr.full_name, pr.avatar_url, pr.headline, pr.skills
+       FROM users u
+       LEFT JOIN profiles pr ON u.id = pr.user_id
+       WHERE u.id != $1
+       AND u.id NOT IN (
+         SELECT following_id FROM follows WHERE follower_id = $1
+       )
+       ORDER BY RANDOM()
+       LIMIT 5`,
+      [req.user.id]
+    );
+
+    res.status(200).json({ suggestions: result.rows });
+
+  } catch (error) {
+    console.error('GetSuggestions error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { getUserById, updateProfile, getSuggestions };

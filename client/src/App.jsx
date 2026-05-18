@@ -9,6 +9,9 @@ import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Notifications from './pages/Notifications';
 import Jobs from './pages/Jobs';
+import Bookmarks from './pages/Bookmarks';
+import Messages from './pages/Messages';
+import Admin from './pages/Admin';
 const ProtectedRoute = ({ children }) => {
   const { accessToken } = useAuthStore();
   return accessToken ? children : <Navigate to="/login" />;
@@ -41,9 +44,24 @@ function App() {
             <Search />
           </ProtectedRoute>
         } />
+        <Route path="/messages" element={
+  <ProtectedRoute>
+    <Messages />
+  </ProtectedRoute>
+} />
+<Route path="/admin" element={
+  <ProtectedRoute>
+    <Admin />
+  </ProtectedRoute>
+} />
         <Route path="/notifications" element={
   <ProtectedRoute>
     <Notifications />
+  </ProtectedRoute>
+} />
+<Route path="/bookmarks" element={
+  <ProtectedRoute>
+    <Bookmarks />
   </ProtectedRoute>
 } />
 <Route path="/jobs" element={

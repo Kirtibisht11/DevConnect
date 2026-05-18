@@ -1,9 +1,9 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Home, Search, Bell, User, LogOut, Code2, Briefcase, Bookmark, MessageSquare, Shield } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
-import { Home, Search, Bell, User, LogOut, Code2, Briefcase } from 'lucide-react';
+
 export default function Navbar() {
   const { user, logout } = useAuthStore();
-  const navigate = useNavigate();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 h-14">
@@ -21,6 +21,16 @@ export default function Navbar() {
             <Home size={20} />
             <span className="text-xs">Home</span>
           </Link>
+          <Link to="/messages" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
+            <MessageSquare size={20} />
+            <span className="text-xs">Messages</span>
+          </Link>
+          {user?.role === 'admin' && (
+  <Link to="/admin" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
+    <Shield size={20} />
+    <span className="text-xs">Admin</span>
+  </Link>
+)}
           <Link to="/search" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
             <Search size={20} />
             <span className="text-xs">Search</span>
@@ -33,11 +43,16 @@ export default function Navbar() {
             <User size={20} />
             <span className="text-xs">Profile</span>
           </Link>
+          <Link to="/bookmarks" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
+            <Bookmark size={20} />
+            <span className="text-xs">Saved</span>
+          </Link>
+          <Link to="/jobs" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
+            <Briefcase size={20} />
+            <span className="text-xs">Jobs</span>
+          </Link>
         </div>
-<Link to="/jobs" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-  <Briefcase size={20} />
-  <span className="text-xs">Jobs</span>
-</Link>
+
         {/* User + Logout */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">

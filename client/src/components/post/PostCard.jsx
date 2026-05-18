@@ -1,11 +1,14 @@
-import { Heart, MessageCircle, Bookmark, Share2, Send } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Share2, Send, Trash2, Edit3, X, Check } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import useAuthStore from '../../store/authStore';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 export default function PostCard({ post, onUpdate }) {
+  const { user } = useAuthStore();
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(Number(post.likes_count) || 0);
   const [showComments, setShowComments] = useState(false);
@@ -14,6 +17,13 @@ export default function PostCard({ post, onUpdate }) {
   const [commentsCount, setCommentsCount] = useState(Number(post.comments_count) || 0);
   const [loadingComments, setLoadingComments] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const [currentContent, setCurrentContent] = useState(post.content);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const isOwner = user?.id === post.user_id;
 
   const handleLike = async () => {
     try {
@@ -62,26 +72,119 @@ export default function PostCard({ post, onUpdate }) {
     }
   };
 
+  const handleBookmark = async () => {
+    try {
+      const res = await api.post(`/bookmarks/${post.id}`);
+      setBookmarked(res.data.bookmarked);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Delete this post?')) return;
+    try {
+      await api.delete(`/posts/${post.id}`);
+      onUpdate();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEditSave = async () => {
+    if (!editContent.trim()) return;
+    try {
+      await api.put(`/posts/${post.id}`, { content: editContent });
+      setCurrentContent(editContent);
+      setIsEditing(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition">
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-          {post.username?.[0]?.toUpperCase()}
-        </div>
-        <div>
-          <p className="font-semibold text-sm text-gray-900">
-            {post.full_name || post.username}
-          </p>
+        <Link to={`/profile/${post.user_id}`}>
+          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold overflow-hidden">
+            {post.avatar_url ? (
+              <img src={post.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              post.username?.[0]?.toUpperCase()
+            )}
+          </div>
+        </Link>
+        <div className="flex-1">
+          <Link to={`/profile/${post.user_id}`}>
+            <p className="font-semibold text-sm text-gray-900 hover:underline">
+              {post.full_name || post.username}
+            </p>
+          </Link>
           <p className="text-xs text-gray-400">
             @{post.username} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
           </p>
         </div>
+
+        {/* Options menu for post owner */}
+        {isOwner && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="text-gray-400 hover:text-gray-600 p-1 rounded transition"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+              </svg>
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-xl shadow-lg z-10 w-36 py-1">
+                <button
+                  onClick={() => { setIsEditing(true); setShowMenu(false); }}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                >
+                  <Edit3 size={14} /> Edit post
+                </button>
+                <button
+                  onClick={() => { handleDelete(); setShowMenu(false); }}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition"
+                >
+                  <Trash2 size={14} /> Delete post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Content */}
-      <p className="text-gray-800 text-sm leading-relaxed mb-3">{post.content}</p>
+      {/* Content — editable or display */}
+      {isEditing ? (
+        <div className="mb-3">
+          <textarea
+            value={editContent}
+            onChange={e => setEditContent(e.target.value)}
+            rows={3}
+            className="w-full border border-indigo-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-200 resize-none"
+          />
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={handleEditSave}
+              className="flex items-center gap-1 bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-full hover:bg-indigo-700 transition"
+            >
+              <Check size={12} /> Save
+            </button>
+            <button
+              onClick={() => { setIsEditing(false); setEditContent(currentContent); }}
+              className="flex items-center gap-1 border border-gray-200 text-gray-500 text-xs px-3 py-1.5 rounded-full hover:bg-gray-50 transition"
+            >
+              <X size={12} /> Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-800 text-sm leading-relaxed mb-3">{currentContent}</p>
+      )}
 
       {/* Code snippet */}
       {post.code_snippet && (
@@ -112,8 +215,11 @@ export default function PostCard({ post, onUpdate }) {
           <MessageCircle size={16} />
           <span>{commentsCount}</span>
         </button>
-        <button className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500 transition">
-          <Bookmark size={16} />
+        <button
+          onClick={handleBookmark}
+          className={`flex items-center gap-1.5 text-sm transition ${bookmarked ? 'text-indigo-500' : 'text-gray-400 hover:text-indigo-500'}`}
+        >
+          <Bookmark size={16} fill={bookmarked ? 'currentColor' : 'none'} />
         </button>
         <button className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500 transition ml-auto">
           <Share2 size={16} />
