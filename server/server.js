@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin:  [
     "http://localhost:5173",
-    "https://dev-connect-8awfnm9dh-kirtis-projects-084efe1d.vercel.app"
+    "https://dev-connect-virid.vercel.app/login"
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
