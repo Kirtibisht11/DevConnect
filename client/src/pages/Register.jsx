@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Code2, Terminal } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
 export default function Register() {
@@ -7,9 +8,7 @@ export default function Register() {
   const { register, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,72 +18,70 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(239,68,68,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
+      <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">DevConnect</h1>
-          <p className="text-gray-500 mt-1">Create your developer profile</p>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Code2 size={32} className="text-red-500" />
+            <span className="text-3xl font-bold text-white">Dev<span className="text-red-500">Connect</span></span>
+          </div>
+          <p className="text-gray-500 text-sm font-mono">// join the developer community</p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">
-            {error}
+        <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-8">
+          <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#2a2a2a]">
+            <Terminal size={14} className="text-red-500" />
+            <span className="text-xs text-gray-500 font-mono">auth.register()</span>
+            <div className="ml-auto flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#2a2a2a]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#2a2a2a]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+            </div>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              placeholder="kirtibisht"
-              required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="kirti@example.com"
-              required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 rounded-lg transition disabled:opacity-60"
-          >
-            {isLoading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm font-mono">
+              ❌ {error}
+            </div>
+          )}
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary font-medium hover:underline">
-            Sign in
-          </Link>
-        </p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {[
+              { label: 'username', name: 'username', type: 'text', placeholder: 'devuser123' },
+              { label: 'email_address', name: 'email', type: 'email', placeholder: 'you@example.com' },
+              { label: 'password', name: 'password', type: 'password', placeholder: '••••••••' },
+            ].map(({ label, name, type, placeholder }) => (
+              <div key={name}>
+                <label className="block text-xs font-mono text-gray-500 mb-1.5">{label}</label>
+                <input
+                  type={type}
+                  name={name}
+                  value={form[name]}
+                  onChange={handleChange}
+                  placeholder={placeholder}
+                  required
+                  className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition font-mono"
+                />
+              </div>
+            ))}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 font-mono text-sm"
+            >
+              {isLoading ? '// creating account...' : '$ register --new-user'}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-gray-600 mt-6 font-mono">
+            // already a dev?{' '}
+            <Link to="/login" className="text-red-400 hover:text-red-300 transition">
+              login()
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

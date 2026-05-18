@@ -6,64 +6,58 @@ export default function Navbar() {
   const { user, logout } = useAuthStore();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 h-14">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#111111] border-b border-[#2a2a2a] h-14">
       <div className="max-w-6xl mx-auto px-4 h-full flex items-center justify-between">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-indigo-600">
-          <Code2 size={24} />
-          DevConnect
+        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+          <Code2 size={22} className="text-red-500" />
+          <span className="text-white">Dev</span>
+          <span className="text-red-500">Connect</span>
         </Link>
 
         {/* Nav Links */}
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <Home size={20} />
-            <span className="text-xs">Home</span>
-          </Link>
-          <Link to="/messages" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <MessageSquare size={20} />
-            <span className="text-xs">Messages</span>
-          </Link>
+        <div className="flex items-center gap-1">
+          {[
+            { to: '/', icon: Home, label: 'Home' },
+            { to: '/messages', icon: MessageSquare, label: 'Messages' },
+            { to: '/search', icon: Search, label: 'Search' },
+            { to: '/notifications', icon: Bell, label: 'Alerts' },
+            { to: `/profile/${user?.id}`, icon: User, label: 'Profile' },
+            { to: '/bookmarks', icon: Bookmark, label: 'Saved' },
+            { to: '/jobs', icon: Briefcase, label: 'Jobs' },
+          ].map(({ to, icon: Icon, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex flex-col items-center px-3 py-2 text-gray-500 hover:text-red-500 transition rounded-lg hover:bg-[#1a1a1a] group"
+            >
+              <Icon size={18} />
+              <span className="text-[10px] mt-0.5">{label}</span>
+            </Link>
+          ))}
           {user?.role === 'admin' && (
-  <Link to="/admin" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-    <Shield size={20} />
-    <span className="text-xs">Admin</span>
-  </Link>
-)}
-          <Link to="/search" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <Search size={20} />
-            <span className="text-xs">Search</span>
-          </Link>
-          <Link to="/notifications" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <Bell size={20} />
-            <span className="text-xs">Notifications</span>
-          </Link>
-          <Link to={`/profile/${user?.id}`} className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <User size={20} />
-            <span className="text-xs">Profile</span>
-          </Link>
-          <Link to="/bookmarks" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <Bookmark size={20} />
-            <span className="text-xs">Saved</span>
-          </Link>
-          <Link to="/jobs" className="flex flex-col items-center text-gray-500 hover:text-indigo-600 transition">
-            <Briefcase size={20} />
-            <span className="text-xs">Jobs</span>
-          </Link>
+            <Link
+              to="/admin"
+              className="flex flex-col items-center px-3 py-2 text-gray-500 hover:text-red-500 transition rounded-lg hover:bg-[#1a1a1a]"
+            >
+              <Shield size={18} />
+              <span className="text-[10px] mt-0.5">Admin</span>
+            </Link>
+          )}
         </div>
 
-        {/* User + Logout */}
+        {/* User */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+          <div className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-3 py-1.5">
+            <div className="w-6 h-6 rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center text-red-400 font-bold text-xs">
               {user?.username?.[0]?.toUpperCase()}
             </div>
-            <span className="text-sm font-medium text-gray-700">{user?.username}</span>
+            <span className="text-sm text-gray-300">{user?.username}</span>
           </div>
           <button
             onClick={logout}
-            className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition text-sm"
+            className="p-2 text-gray-500 hover:text-red-500 hover:bg-[#1a1a1a] rounded-lg transition"
           >
             <LogOut size={16} />
           </button>
