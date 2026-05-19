@@ -5,10 +5,12 @@ import useAuthStore from './store/authStore';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
+import Post from './pages/Post';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Notifications from './pages/Notifications';
 import Jobs from './pages/Jobs';
+import JobApply from './pages/JobApply';
 import Bookmarks from './pages/Bookmarks';
 import Messages from './pages/Messages';
 import Admin from './pages/Admin';
@@ -22,7 +24,7 @@ function App() {
 
   useEffect(() => {
     if (accessToken) getMe();
-  }, []);
+  }, [accessToken, getMe]);
 
   return (
     <BrowserRouter>
@@ -37,6 +39,11 @@ function App() {
         <Route path="/profile/:id" element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/posts/:id" element={
+          <ProtectedRoute>
+            <Post />
           </ProtectedRoute>
         } />
         <Route path="/search" element={
@@ -69,6 +76,11 @@ function App() {
     <Jobs />
   </ProtectedRoute>
 } />
+        <Route path="/jobs/:id" element={
+          <ProtectedRoute>
+            <JobApply />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   );

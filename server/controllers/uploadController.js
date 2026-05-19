@@ -79,4 +79,123 @@ const uploadCover = async (req, res) => {
   }
 };
 
-module.exports = { uploadAvatar, uploadCover };
+const uploadPostImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: 'devconnect/posts',
+          transformation: [
+            { quality: 'auto', fetch_format: 'auto' }
+          ]
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
+    });
+
+    res.status(200).json({
+      message: '✅ Post image uploaded!',
+      image_url: result.secure_url
+    });
+
+  } catch (error) {
+    console.error('UploadPostImage error:', error);
+    res.status(500).json({ message: 'Server error during upload' });
+  }
+};
+
+const uploadMessageAttachment = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: 'devconnect/messages',
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
+    });
+
+    res.status(200).json({
+      message: 'Attachment uploaded',
+      attachment_url: result.secure_url,
+      attachment_type: req.file.mimetype,
+      attachment_name: req.file.originalname,
+      attachment_size: req.file.size,
+    });
+  } catch (error) {
+    console.error('UploadMessageAttachment error:', error);
+    res.status(500).json({ message: 'Server error during upload' });
+  }
+};
+
+const uploadResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const allowedMimeTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const allowedExtensions = ['.pdf', '.doc', '.docx'];
+    const lowerFileName = req.file.originalname.toLowerCase();
+    const hasAllowedExtension = allowedExtensions.some((extension) => lowerFileName.endsWith(extension));
+
+    if (!allowedMimeTypes.includes(req.file.mimetype) && !hasAllowedExtension) {
+      return res.status(400).json({ message: 'Only PDF, DOC, or DOCX resumes are allowed' });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: 'devconnect/resumes',
+          resource_type: 'raw',
+          use_filename: true,
+          unique_filename: true,
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
+    });
+
+    res.status(200).json({
+      message: 'Resume uploaded',
+      resume_url: result.secure_url,
+      resume_file_name: req.file.originalname,
+      resume_file_type: req.file.mimetype,
+      resume_file_size: req.file.size,
+    });
+  } catch (error) {
+    console.error('UploadResume error:', error);
+    res.status(500).json({
+      message: error.message || 'Server error during resume upload'
+    });
+  }
+};
+
+module.exports = {
+  uploadAvatar,
+  uploadCover,
+  uploadPostImage,
+  uploadMessageAttachment,
+  uploadResume
+};

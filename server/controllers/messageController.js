@@ -1,8 +1,26 @@
 const pool = require('../db');
 
+let ensureAttachmentColumnsPromise;
+
+const ensureAttachmentColumns = () => {
+  if (!ensureAttachmentColumnsPromise) {
+    ensureAttachmentColumnsPromise = pool.query(`
+      ALTER TABLE messages
+      ADD COLUMN IF NOT EXISTS attachment_url TEXT,
+      ADD COLUMN IF NOT EXISTS attachment_type TEXT,
+      ADD COLUMN IF NOT EXISTS attachment_name TEXT,
+      ADD COLUMN IF NOT EXISTS attachment_size INTEGER
+    `);
+  }
+
+  return ensureAttachmentColumnsPromise;
+};
+
 // GET ALL CONVERSATIONS (list of people you've messaged)
 const getConversations = async (req, res) => {
   try {
+    await ensureAttachmentColumns();
+
     const result = await pool.query(
       `SELECT DISTINCT ON (other_user_id)
               other_user_id,
@@ -10,13 +28,22 @@ const getConversations = async (req, res) => {
               pr.full_name,
               pr.avatar_url,
               m.content as last_message,
+              m.attachment_name as last_attachment_name,
+              m.attachment_type as last_attachment_type,
               m.created_at as last_message_time,
               m.is_read,
-              m.sender_id
+              m.sender_id,
+              (
+                SELECT COUNT(*)
+                FROM messages unread
+                WHERE unread.sender_id = m.other_user_id
+                  AND unread.receiver_id = $1
+                  AND unread.is_read = false
+              ) as unread_count
        FROM (
          SELECT 
            CASE WHEN sender_id = $1 THEN receiver_id ELSE sender_id END as other_user_id,
-           content, created_at, is_read, sender_id
+           content, attachment_name, attachment_type, created_at, is_read, sender_id
          FROM messages
          WHERE sender_id = $1 OR receiver_id = $1
        ) m
@@ -37,6 +64,8 @@ const getConversations = async (req, res) => {
 // GET MESSAGES WITH A SPECIFIC USER
 const getMessages = async (req, res) => {
   try {
+    await ensureAttachmentColumns();
+
     const { userId } = req.params;
 
     const result = await pool.query(
@@ -71,11 +100,14 @@ const getMessages = async (req, res) => {
 // SEND A MESSAGE
 const sendMessage = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { content } = req.body;
+    await ensureAttachmentColumns();
 
-    if (!content?.trim()) {
-      return res.status(400).json({ message: 'Message content is required' });
+    const { userId } = req.params;
+    const { content, attachment_url, attachment_type, attachment_name, attachment_size } = req.body;
+    const messageText = content?.trim() || '';
+
+    if (!messageText && !attachment_url) {
+      return res.status(400).json({ message: 'Message content or attachment is required' });
     }
 
     // Check receiver exists
@@ -87,10 +119,21 @@ const sendMessage = async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO messages (sender_id, receiver_id, content)
-       VALUES ($1, $2, $3)
+      `INSERT INTO messages (
+         sender_id, receiver_id, content,
+         attachment_url, attachment_type, attachment_name, attachment_size
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [req.user.id, userId, content.trim()]
+      [
+        req.user.id,
+        userId,
+        messageText,
+        attachment_url || null,
+        attachment_type || null,
+        attachment_name || null,
+        attachment_size || null,
+      ]
     );
 
     res.status(201).json({ message: result.rows[0] });
@@ -104,6 +147,8 @@ const sendMessage = async (req, res) => {
 // GET UNREAD MESSAGE COUNT
 const getUnreadCount = async (req, res) => {
   try {
+    await ensureAttachmentColumns();
+
     const result = await pool.query(
       `SELECT COUNT(*) as count FROM messages
        WHERE receiver_id = $1 AND is_read = false`,

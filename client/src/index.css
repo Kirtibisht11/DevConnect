@@ -21,6 +21,27 @@ body {
   font-family: 'Inter', 'JetBrains Mono', monospace;
   background-color: #0a0a0a;
   color: #e5e5e5;
+  background-image:
+    radial-gradient(circle at top right, rgba(239,68,68,0.12), transparent 18%),
+    radial-gradient(circle at bottom left, rgba(239,68,68,0.08), transparent 14%);
+  background-repeat: no-repeat;
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding-top: 6rem;
+  padding-bottom: 2.5rem;
+}
+
+.page-box {
+  max-width: 1240px;
+  width: min(100%, 1240px);
+  margin: clamp(1.5rem, 3vw, 3rem) auto 0;
+  padding: clamp(52px, 5vw, 72px) clamp(36px, 5vw, 64px) clamp(56px, 6vw, 76px);
+  background: rgba(17,17,17,0.98);
+  border: 1px solid rgba(239,68,68,0.14);
+  border-radius: 34px;
+  box-shadow: 0 48px 120px rgba(239,68,68,0.1);
 }
 
 ::-webkit-scrollbar {

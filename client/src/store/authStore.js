@@ -56,6 +56,10 @@ const useAuthStore = create((set) => ({
     window.location.href = '/login';
   },
 
+  updateUser: (updates) => set((state) => ({
+    user: state.user ? { ...state.user, ...updates } : state.user,
+  })),
+
   clearError: () => set({ error: null }),
 }));
 

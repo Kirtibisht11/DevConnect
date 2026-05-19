@@ -9,24 +9,39 @@ dotenv.config();
 const app = express();
 
 /* ========================
-   CORS CONFIG (FIXED)
+   CORS CONFIG
 ======================== */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://dev-connect-virid.vercel.app",
-  "https://dev-connect-jlad2mk5l-kirtis-projects-084efe1d.vercel.app"
+const envOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  ...envOrigins,
+]);
+
+const allowedOriginPatterns = [
+  /^http:\/\/localhost:\d+$/,
+  /^http:\/\/127\.0\.0\.1:\d+$/,
 ];
+
+const isAllowedOrigin = (origin) => {
+  return allowedOrigins.has(origin) || allowedOriginPatterns.some((pattern) => pattern.test(origin));
+};
 
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like Postman / server-to-server)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
-    } else {
-      return callback(new Error("CORS not allowed"), false);
     }
+
+    console.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error("CORS not allowed"), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

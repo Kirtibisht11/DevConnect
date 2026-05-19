@@ -265,9 +265,16 @@ export default function PostCard({ post, onUpdate }) {
           </div>
         </div>
       ) : (
-        <p className="text-gray-200 text-sm leading-relaxed mb-3">
-          {currentContent}
-        </p>
+        <>
+          <p className="text-gray-200 text-sm leading-relaxed mb-3">
+            {currentContent}
+          </p>
+          {post.image_url && (
+            <div className="mb-3 rounded-2xl overflow-hidden border border-[#2a2a2a]">
+              <img src={post.image_url} alt="Post" className="w-full object-cover max-h-[420px]" />
+            </div>
+          )}
+        </>
       )}
 
       {/* Code Snippet */}
