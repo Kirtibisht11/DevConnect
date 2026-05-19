@@ -63,7 +63,7 @@ export default function Jobs() {
         <div className="page-box max-w-screen-xl mx-auto px-4 py-6 pb-10">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="page-hero flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-100 font-mono">// job_board</h1>
               <p className="text-sm text-gray-500 mt-0.5 font-mono">find your next developer role</p>
@@ -181,7 +181,7 @@ export default function Jobs() {
                     )}
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <Link to={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-gray-200 text-sm px-4 py-2 rounded-lg font-mono transition">
+                      <Link to={`/jobs/${job.id}`} className="job-view-link inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg font-mono transition">
                         View job <ArrowRight size={13} />
                       </Link>
                       {job.apply_url && (

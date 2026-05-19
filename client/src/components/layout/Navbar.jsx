@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Bell, User, LogOut, Code2, Briefcase, Bookmark, MessageSquare, Shield } from 'lucide-react';
+import { Home, Search, Bell, User, LogOut, Code2, Briefcase, Bookmark, MessageSquare, Shield, Users, Moon, Sun } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 
@@ -9,11 +9,15 @@ export default function Navbar() {
   const location = useLocation();
   const [unreadAlerts, setUnreadAlerts] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.body.classList.toggle('light-mode', theme === 'light');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!user) {
-      setUnreadAlerts(0);
-      setUnreadMessages(0);
       return;
     }
 
@@ -51,6 +55,7 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/', icon: Home, label: 'Home' },
+    { to: '/network', icon: Users, label: 'Network' },
     { to: '/messages', icon: MessageSquare, label: 'Messages' },
     { to: '/search', icon: Search, label: 'Search' },
     { to: '/notifications', icon: Bell, label: 'Alerts' },
@@ -67,22 +72,24 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-[#111111]/95 to-[#330000]/90 backdrop-blur border-b border-red-900/20 h-14">
-      <div className="max-w-screen-xl mx-auto px-4 h-full flex items-center justify-between gap-4">
+      <div className="mx-auto h-full flex w-full max-w-[1520px] items-center justify-between gap-4 px-8 sm:px-12 xl:px-16 2xl:px-20">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
+        <Link to="/" className="ml-6 flex items-center gap-2 font-bold text-lg shrink-0 lg:ml-10 xl:ml-14">
           <Code2 size={20} className="text-red-500" />
           <span className="text-white hidden sm:inline">Dev<span className="text-red-500">Connect</span></span>
         </Link>
 
         {/* Nav Links - centered */}
-        <div className="flex items-center gap-0.5 flex-1 justify-center">
+        <div className="flex items-center gap-1.5 md:gap-2 flex-1 justify-center">
           {navLinks.map((link) => {
             const Icon = link.icon;
-            const showAlertBadge = link.to === '/notifications' && unreadAlerts > 0;
-            const alertBadgeLabel = unreadAlerts > 99 ? '99+' : unreadAlerts;
-            const showMessageBadge = link.to === '/messages' && unreadMessages > 0;
-            const messageBadgeLabel = unreadMessages > 99 ? '99+' : unreadMessages;
+            const alertCount = user ? unreadAlerts : 0;
+            const messageCount = user ? unreadMessages : 0;
+            const showAlertBadge = link.to === '/notifications' && alertCount > 0;
+            const alertBadgeLabel = alertCount > 99 ? '99+' : alertCount;
+            const showMessageBadge = link.to === '/messages' && messageCount > 0;
+            const messageBadgeLabel = messageCount > 99 ? '99+' : messageCount;
             const badgeLabel = showAlertBadge ? alertBadgeLabel : messageBadgeLabel;
             const showBadge = showAlertBadge || showMessageBadge;
 
@@ -90,7 +97,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 to={link.to}
-                className={`relative flex flex-col items-center px-3 py-1.5 rounded-lg transition-all group ${
+                className={`relative flex flex-col items-center px-3.5 py-1.5 rounded-lg transition-all group ${
                   isActive(link.to)
                     ? 'text-red-500 bg-red-500/10'
                     : 'text-gray-500 hover:text-red-400 hover:bg-[#1a1a1a]'
@@ -111,7 +118,7 @@ export default function Navbar() {
           {user?.role === 'admin' && (
             <Link
               to="/admin"
-              className={`flex flex-col items-center px-3 py-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center px-3.5 py-1.5 rounded-lg transition-all ${
                 location.pathname === '/admin'
                   ? 'text-red-500 bg-red-500/10'
                   : 'text-gray-500 hover:text-red-400 hover:bg-[#1a1a1a]'
@@ -124,7 +131,7 @@ export default function Navbar() {
         </div>
 
         {/* Right side: user pill + logout */}
-        <div className="flex items-center gap-2 justify-end shrink-0">
+        <div className="mr-12 flex items-center gap-2.5 justify-end shrink-0 lg:mr-20 xl:mr-36 2xl:mr-44">
           <Link
             to={`/profile/${user?.id}`}
             className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] hover:border-red-500/30 rounded-full px-3 py-1.5 transition"
@@ -138,6 +145,14 @@ export default function Navbar() {
             </div>
             <span className="text-sm text-gray-300 font-mono hidden md:block">{user?.username}</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to night mode'}
+            className="theme-toggle flex items-center gap-1.5 p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 rounded-lg transition"
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           <button
             onClick={logout}
             title="Logout"

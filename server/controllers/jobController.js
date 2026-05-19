@@ -38,11 +38,70 @@ const ensureApplicationsTable = () => {
           job_id_type,
           user_id_type
         );
+
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS message TEXT');
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS resume_url TEXT');
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS resume_file_name TEXT');
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS resume_file_type TEXT');
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS resume_file_size INTEGER');
+        EXECUTE format('ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()');
+
+        IF NOT EXISTS (
+          SELECT 1
+          FROM pg_constraint
+          WHERE conname = 'job_applications_job_id_applicant_id_key'
+            AND conrelid = 'job_applications'::regclass
+        ) THEN
+          ALTER TABLE job_applications
+          ADD CONSTRAINT job_applications_job_id_applicant_id_key
+          UNIQUE (job_id, applicant_id);
+        END IF;
       END $$;
     `);
   }
 
   return ensureApplicationsTablePromise;
+};
+
+// GET APPLICATIONS FOR A JOB OWNER
+const getJobApplications = async (req, res) => {
+  try {
+    await ensureApplicationsTable();
+
+    const { id } = req.params;
+
+    const jobResult = await pool.query(
+      'SELECT id, poster_id FROM jobs WHERE id = $1',
+      [id]
+    );
+
+    if (jobResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (String(jobResult.rows[0].poster_id) !== String(req.user.id)) {
+      return res.status(403).json({ message: 'Only the job poster can view applications' });
+    }
+
+    const result = await pool.query(
+      `SELECT ja.*,
+              u.username,
+              pr.full_name,
+              pr.avatar_url,
+              pr.headline
+       FROM job_applications ja
+       JOIN users u ON ja.applicant_id = u.id
+       LEFT JOIN profiles pr ON u.id = pr.user_id
+       WHERE ja.job_id = $1
+       ORDER BY ja.created_at DESC`,
+      [jobResult.rows[0].id]
+    );
+
+    res.status(200).json({ applications: result.rows });
+  } catch (error) {
+    console.error('GetJobApplications error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // GET ALL JOBS
@@ -236,7 +295,9 @@ const applyToJob = async (req, res) => {
       `INSERT INTO notifications (recipient_id, sender_id, type, entity_id)
        VALUES ($1, $2, 'job_apply', $3)`,
       [job.poster_id, req.user.id, job.id]
-    );
+    ).catch((notificationError) => {
+      console.error('JobApply notification error:', notificationError);
+    });
 
     res.status(200).json({ message: '✅ Application submitted successfully!' });
   } catch (error) {
@@ -268,4 +329,4 @@ const deleteJob = async (req, res) => {
   }
 };
 
-module.exports = { getAllJobs, getJobById, createJob, applyToJob, deleteJob };
+module.exports = { getAllJobs, getJobById, createJob, applyToJob, getJobApplications, deleteJob };

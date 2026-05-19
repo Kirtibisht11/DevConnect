@@ -32,7 +32,7 @@ export default function PeopleYouMayKnow() {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="bg-[#111111] border border-[#2a2a2a] rounded-xl p-4">
+    <div className="home-suggestions-card bg-[#111111] border border-[#2a2a2a] rounded-xl p-4">
       <h3 className="text-xs font-mono text-gray-500 uppercase tracking-wide mb-4">// people you may know</h3>
       <div className="space-y-4">
         {suggestions.map(user => (

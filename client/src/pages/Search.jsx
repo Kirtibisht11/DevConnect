@@ -51,7 +51,7 @@ export default function Search() {
         <div className="page-box max-w-screen-xl mx-auto px-4 py-8">
 
           {/* Page Header */}
-          <div className="mb-6">
+          <div className="page-hero mb-6">
             <h1 className="text-2xl font-bold text-gray-100 font-mono">// search</h1>
             <p className="text-sm text-gray-500 mt-1 font-mono">find developers, posts, and more</p>
           </div>

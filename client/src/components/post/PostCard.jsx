@@ -2,7 +2,6 @@ import {
   Heart,
   MessageCircle,
   Bookmark,
-  Share2,
   Send,
   Trash2,
   Edit3,
@@ -297,55 +296,63 @@ export default function PostCard({ post, onUpdate }) {
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-5 mt-3 pt-3 border-t border-[#2a2a2a]">
+      <div className="mt-4 border-t border-[#2a2a2a] pt-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleLike}
+            className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+              liked
+                ? 'border-red-500 bg-red-500/10 text-red-400'
+                : 'border-[#2a2a2a] text-gray-300 hover:border-red-500 hover:text-red-400'
+            }`}
+          >
+            <Heart
+              size={16}
+              fill={liked ? 'currentColor' : 'none'}
+            />
+            Like
+          </button>
 
-        <button
-          onClick={handleLike}
-          className={`flex items-center gap-1.5 text-sm transition ${
-            liked
-              ? 'text-red-500'
-              : 'text-gray-500 hover:text-red-500'
-          }`}
-        >
-          <Heart
-            size={16}
-            fill={liked ? 'currentColor' : 'none'}
-          />
+          <button
+            onClick={handleToggleComments}
+            className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+              showComments
+                ? 'border-red-500 bg-red-500/10 text-red-400'
+                : 'border-[#2a2a2a] text-gray-300 hover:border-red-500 hover:text-red-400'
+            }`}
+          >
+            <MessageCircle size={16} />
+            Comment
+          </button>
 
-          <span>{likesCount}</span>
-        </button>
+          <button
+            className="flex items-center gap-2 rounded-full border border-[#2a2a2a] px-3 py-2 text-sm font-medium text-gray-300 hover:border-red-500 hover:text-red-400 transition"
+          >
+            <Send size={16} />
+            Send
+          </button>
 
-        <button
-          onClick={handleToggleComments}
-          className={`flex items-center gap-1.5 text-sm transition ${
-            showComments
-              ? 'text-red-400'
-              : 'text-gray-500 hover:text-red-400'
-          }`}
-        >
-          <MessageCircle size={16} />
+          <button
+            onClick={handleBookmark}
+            className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+              bookmarked
+                ? 'border-red-500 bg-red-500/10 text-red-400'
+                : 'border-[#2a2a2a] text-gray-300 hover:border-red-500 hover:text-red-400'
+            } ml-auto`}
+          >
+            <Bookmark
+              size={16}
+              fill={bookmarked ? 'currentColor' : 'none'}
+            />
+            {bookmarked ? 'Saved' : 'Save'}
+          </button>
+        </div>
 
-          <span>{commentsCount}</span>
-        </button>
-
-        <button
-          onClick={handleBookmark}
-          className={`flex items-center gap-1.5 text-sm transition ${
-            bookmarked
-              ? 'text-red-400'
-              : 'text-gray-500 hover:text-red-400'
-          }`}
-        >
-          <Bookmark
-            size={16}
-            fill={bookmarked ? 'currentColor' : 'none'}
-          />
-        </button>
-
-        <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-400 transition ml-auto">
-          <Share2 size={16} />
-        </button>
-
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+          <span>{likesCount} likes</span>
+          <span>{commentsCount} comments</span>
+          {post.shares_count ? <span>{post.shares_count} shares</span> : null}
+        </div>
       </div>
 
       {/* Comments */}

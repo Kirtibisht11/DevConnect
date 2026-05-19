@@ -14,6 +14,7 @@ import JobApply from './pages/JobApply';
 import Bookmarks from './pages/Bookmarks';
 import Messages from './pages/Messages';
 import Admin from './pages/Admin';
+import Network from './pages/Network';
 const ProtectedRoute = ({ children }) => {
   const { accessToken } = useAuthStore();
   return accessToken ? children : <Navigate to="/login" />;
@@ -54,6 +55,11 @@ function App() {
         <Route path="/messages" element={
   <ProtectedRoute>
     <Messages />
+  </ProtectedRoute>
+} />
+        <Route path="/network" element={
+  <ProtectedRoute>
+    <Network />
   </ProtectedRoute>
 } />
 <Route path="/admin" element={

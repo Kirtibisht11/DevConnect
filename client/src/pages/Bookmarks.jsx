@@ -25,8 +25,8 @@ export default function Bookmarks() {
         <div className="page-box max-w-screen-xl mx-auto px-4 py-6 pb-10">
 
           {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+          <div className="page-hero flex items-center gap-3 mb-6">
+            <div className="page-hero-icon w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
               <Bookmark size={16} className="text-red-500" />
             </div>
             <div>
@@ -50,7 +50,7 @@ export default function Bookmarks() {
                 <p className="text-gray-600 text-sm">Click the bookmark icon on any post to save it here</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="feed-stack">
                 {bookmarks.map(post => <PostCard key={post.id} post={post} onUpdate={fetchBookmarks} />)}
               </div>
             )}

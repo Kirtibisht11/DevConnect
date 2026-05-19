@@ -119,7 +119,7 @@ export default function Notifications() {
         <div className="page-box max-w-screen-xl mx-auto px-4 py-6 pb-10">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="page-hero flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-100 font-mono">// notifications</h1>
               {unreadCount > 0 && (

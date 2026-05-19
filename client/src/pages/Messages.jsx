@@ -122,12 +122,12 @@ export default function Messages() {
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden pt-14">
-        <div className="flex flex-1 max-w-screen-xl w-full mx-auto px-4 pb-4 gap-4 page-box">
-          <div className="flex flex-1 bg-[#111111] border border-[#2a2a2a] rounded-xl overflow-hidden">
+        <div className="messages-page-box flex flex-1 max-w-screen-xl w-full mx-auto px-4 pb-4 gap-4 page-box">
+          <div className="chat-shell flex flex-1 bg-[#111111] border border-[#2a2a2a] rounded-xl overflow-hidden">
 
             {/* Sidebar */}
             <div className="w-72 border-r border-[#2a2a2a] flex flex-col shrink-0">
-              <div className="p-4 border-b border-[#2a2a2a]">
+              <div className="page-hero-compact p-4 border-b border-[#2a2a2a]">
                 <h2 className="font-semibold text-gray-100 font-mono text-sm">// messages</h2>
               </div>
               {isLoading ? (
@@ -144,8 +144,8 @@ export default function Messages() {
                 <div className="overflow-y-auto flex-1">
                   {conversations.map(conv => (
                     <button key={conv.other_user_id} onClick={() => handleSelectUser(conv)}
-                      className={`w-full flex items-center gap-3 p-4 hover:bg-[#1a1a1a] transition text-left border-b border-[#1a1a1a] ${
-                        selectedUser?.other_user_id === conv.other_user_id ? 'bg-red-500/5 border-l-2 border-l-red-500' : ''
+                      className={`w-full flex items-center gap-3 p-4 transition text-left border-b border-[#1a1a1a] ${
+                        selectedUser?.other_user_id === conv.other_user_id ? 'border-l-2 border-l-red-500' : ''
                       }`}
                     >
                       {renderAvatar(conv)}
@@ -179,13 +179,13 @@ export default function Messages() {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="flex-1 overflow-y-auto p-5 space-y-3">
                   {messages.map(msg => {
                     const isMe = msg.sender_id === user?.id;
                     return (
                       <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl text-sm ${
-                          isMe ? 'bg-red-500 text-white rounded-br-sm' : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-200 rounded-bl-sm'
+                        <div className={`message-bubble rounded-2xl text-sm ${
+                          isMe ? 'message-bubble-own bg-red-500 text-white rounded-br-sm' : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-200 rounded-bl-sm'
                         }`}>
                           {msg.content && <p>{msg.content}</p>}
                           {msg.attachment_url && (
@@ -214,7 +214,7 @@ export default function Messages() {
                               )}
                             </div>
                           )}
-                          <p className={`flex items-center gap-1 text-xs mt-1 ${isMe ? 'justify-end text-red-100/80' : 'text-gray-500'}`}>
+                          <p className={`flex flex-wrap items-center gap-1 text-xs mt-1 ${isMe ? 'justify-end text-white/80' : 'text-gray-500'}`}>
                             <span>{formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}</span>
                             {isMe && (
                               <span className="inline-flex items-center gap-0.5" title={msg.is_read ? 'Seen' : 'Sent'}>
@@ -281,11 +281,11 @@ export default function Messages() {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <MessageSquare size={48} className="mx-auto mb-4 text-gray-700" />
-                  <p className="font-medium text-gray-400 font-mono">// select a conversation</p>
-                  <p className="text-sm mt-1 text-gray-600">Or start one from someone's profile</p>
+              <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#061434] via-[#0f2f69] to-[#123f8f]">
+                <div className="text-center text-white">
+                  <MessageSquare size={48} className="mx-auto mb-4 text-white" />
+                  <p className="font-semibold text-white font-mono">// select a conversation</p>
+                  <p className="text-sm mt-1 text-blue-100">or start from someone's profile</p>
                 </div>
               </div>
             )}

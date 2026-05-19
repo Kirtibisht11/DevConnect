@@ -61,7 +61,7 @@ export default function CreatePost({ onPostCreated }) {
   };
 
   return (
-    <div className="bg-[#111111] border border-[#2a2a2a] rounded-xl p-4">
+    <div className="home-create-post bg-[#111111] border border-[#2a2a2a] rounded-xl p-4">
       <div className="flex gap-3">
         <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 font-bold shrink-0 overflow-hidden">
           {user?.avatar_url ? (

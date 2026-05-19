@@ -184,15 +184,15 @@ export default function Profile() {
       <Navbar />
 
       <div className="pt-14 min-h-screen">
-        <div className="page-box max-w-screen-xl mx-auto px-4 py-6 pb-10">
+        <div className="profile-page-box page-box mx-auto px-4 py-6 pb-10">
           <div className="flex gap-6 justify-center">
 
             {/* Profile Card - left column */}
             <div className="flex-1 min-w-0 max-w-6xl mx-auto">
-              <div className="bg-[#111111] border border-[#2a2a2a] rounded-3xl overflow-hidden mb-5 w-full mx-auto">
+              <div className="profile-main-card bg-[#111111] border border-[#2a2a2a] rounded-3xl overflow-hidden mb-6 w-full mx-auto">
 
                 {/* Cover */}
-                <div className="relative h-40 bg-gradient-to-r from-red-900/60 to-red-500/30 group">
+                <div className="relative h-44 bg-gradient-to-r from-red-900/60 to-red-500/30 group">
                   {profile?.cover_url && (
                     <img src={profile.cover_url} alt="cover" className="w-full h-full object-cover" />
                   )}
@@ -204,26 +204,8 @@ export default function Profile() {
                   )}
                 </div>
 
-                <div className="px-6 pb-6 md:px-10">
-                  <div className="flex items-end justify-between -mt-10 mb-4">
-
-                    {/* Avatar */}
-                    <div className="relative w-20 h-20 group">
-                      <div className="w-20 h-20 rounded-full bg-red-500/10 border-4 border-[#111111] flex items-center justify-center text-red-400 font-bold text-2xl overflow-hidden">
-                        {profile?.avatar_url ? (
-                          <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          profile?.username?.[0]?.toUpperCase()
-                        )}
-                      </div>
-                      {isOwnProfile && (
-                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
-                          <span className="text-white text-xs font-mono">Edit</span>
-                          <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-                        </label>
-                      )}
-                    </div>
-
+                <div className="px-6 pb-8 md:px-10">
+                  <div className="flex justify-end -mt-16 mb-2">
                     {/* Buttons */}
                     <div className="flex gap-2 mb-1">
                       {isOwnProfile ? (
@@ -423,21 +405,40 @@ export default function Profile() {
                       </div>
                     </div>
                   ) : (
-                    <>
-                      <div className="flex items-center justify-center gap-2 flex-wrap text-center">
-                        <h1 className="text-2xl font-bold text-gray-100">{profile?.full_name || profile?.username}</h1>
-                        {profile?.open_to_work && (
-                          <span className="flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">
-                            <Briefcase size={11} /> Open to work
-                          </span>
-                        )}
+                    <div className="profile-identity-block">
+                      <div className="profile-name-panel">
+                        <div className="relative w-32 h-32 group shrink-0">
+                          <div className="w-32 h-32 rounded-full bg-red-500/10 border-[6px] border-[#111111] flex items-center justify-center text-red-400 font-bold text-4xl overflow-hidden shadow-xl shadow-black/20">
+                            {profile?.avatar_url ? (
+                              <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              profile?.username?.[0]?.toUpperCase()
+                            )}
+                          </div>
+                          {isOwnProfile && (
+                            <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                              <span className="text-white text-xs font-mono">Edit</span>
+                              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                            </label>
+                          )}
+                        </div>
+                        <div className="profile-name-copy">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h1 className="text-3xl font-bold text-gray-100 leading-tight">{profile?.full_name || profile?.username}</h1>
+                            {profile?.open_to_work && (
+                              <span className="flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">
+                                <Briefcase size={11} /> Open to work
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-gray-500 text-sm font-mono mt-1">@{profile?.username}</p>
+                          {profile?.headline && <p className="profile-headline text-gray-300 text-lg font-semibold mt-2">{profile.headline}</p>}
+                          {profile?.bio && <p className="max-w-3xl text-gray-400 text-[15px] mt-3 leading-7">{profile.bio}</p>}
+                        </div>
                       </div>
-                      <p className="text-center text-gray-500 text-sm font-mono">@{profile?.username}</p>
-                      {profile?.headline && <p className="text-center text-gray-300 text-sm mt-1">{profile.headline}</p>}
-                      {profile?.bio && <p className="mx-auto max-w-4xl text-center text-gray-400 text-[15px] mt-3 leading-7">{profile.bio}</p>}
 
                       {profile?.summary ? (
-                        <div className="mt-6 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-6 text-center md:px-12">
+                        <div className="profile-summary-card mt-6 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-6 text-center md:px-10">
                           <div className="flex items-center justify-center gap-2 text-sm text-red-300 mb-3 font-semibold">
                             <FileText size={16} /> Profile summary
                           </div>
@@ -449,7 +450,7 @@ export default function Profile() {
                         </div>
                       ) : null}
 
-                      <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm text-gray-500">
+                      <div className="flex flex-wrap justify-center gap-4 mt-5 text-sm text-gray-500">
                         {profile?.location && <span className="flex items-center gap-1"><MapPin size={13} /> {profile.location}</span>}
                         {profile?.github_url && (
                           <a href={profile.github_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-red-400 transition">
@@ -463,17 +464,17 @@ export default function Profile() {
                         )}
                       </div>
 
-                      <div className="flex justify-center gap-6 mt-4 text-sm">
-                        <div><span className="font-bold text-gray-100">{posts.length}</span><span className="text-gray-500 ml-1">Posts</span></div>
-                        <div><span className="font-bold text-gray-100">{followersCount}</span><span className="text-gray-500 ml-1">Followers</span></div>
+                      <div className="flex justify-center gap-8 mt-4 text-sm">
+                        <div className="flex items-center gap-1.5"><span className="font-bold text-gray-100">{posts.length}</span><span className="text-gray-500">Posts</span></div>
+                        <div className="flex items-center gap-1.5"><span className="font-bold text-gray-100">{followersCount}</span><span className="text-gray-500">Followers</span></div>
                       </div>
 
                       {(profile?.skills?.length > 0 || profile?.certifications?.length > 0) && (
-                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                        <div className="profile-skills-card mt-6 rounded-2xl border border-[#2a2a2a] bg-[#0f0f0f] p-6">
                           {profile?.skills?.length > 0 && (
-                            <div>
-                              <p className="text-xs font-mono text-gray-500 uppercase tracking-wide mb-2">// skills</p>
-                              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+                            <div className="mb-5">
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">// skills</p>
+                              <div className="flex flex-wrap gap-2">
                                 {profile.skills.map((skill, i) => (
                                   <span key={i} className="bg-red-500/10 text-red-400 text-xs px-3 py-1 rounded-full border border-red-500/20">{skill}</span>
                                 ))}
@@ -482,8 +483,8 @@ export default function Profile() {
                           )}
                           {profile?.certifications?.length > 0 && (
                             <div>
-                              <p className="text-xs font-mono text-gray-500 uppercase tracking-wide mb-2">// certifications</p>
-                              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">// certifications</p>
+                              <div className="flex flex-wrap gap-2">
                                 {profile.certifications.map((cert, i) => (
                                   <span key={i} className="bg-slate-700/40 text-slate-200 text-xs px-3 py-1 rounded-full border border-slate-600">{cert}</span>
                                 ))}
@@ -492,27 +493,27 @@ export default function Profile() {
                           )}
                         </div>
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
 
               {profile?.education?.length > 0 && (
-                <div className="bg-[#111111] border border-[#2a2a2a] rounded-3xl p-6 mb-5">
-                  <div className="flex items-center justify-center gap-2 mb-5 text-red-300 font-semibold text-sm uppercase tracking-[0.18em]">
+                <div className="profile-section-card bg-[#111111] border border-[#2a2a2a] rounded-3xl p-7 mb-5">
+                  <div className="flex items-center justify-center gap-2 mb-6 text-red-300 font-semibold text-sm uppercase tracking-[0.18em]">
                     <GraduationCap size={16} /> Education
                   </div>
-                  <div className="grid gap-4 lg:grid-cols-2">
+                  <div className="grid gap-5 lg:grid-cols-2">
                     {profile.education.map((edu, index) => (
-                      <div key={index} className="rounded-2xl border border-[#2a2a2a] bg-[#0f0f0f] p-5">
-                        <div className="flex flex-col gap-2 text-center sm:flex-row sm:items-start sm:justify-between sm:text-left">
-                          <div>
-                            <h3 className="text-sm font-semibold text-gray-100">{edu.degree || 'No degree provided'}</h3>
-                            <p className="text-xs text-gray-500">{edu.school || 'Institution not added'}</p>
+                      <div key={index} className="profile-nested-card rounded-2xl border border-[#2a2a2a] bg-[#0f0f0f] p-6 min-w-0">
+                        <div className="flex flex-col gap-2 text-left sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <h3 className="text-sm font-semibold text-gray-100 break-words">{edu.degree || 'No degree provided'}</h3>
+                            <p className="text-xs text-gray-500 break-words">{edu.school || 'Institution not added'}</p>
                           </div>
-                          <span className="text-xs text-gray-500">{edu.year || 'Year'}</span>
+                          <span className="text-xs text-gray-500 shrink-0">{edu.year || 'Year'}</span>
                         </div>
-                        <p className="mt-3 text-center text-sm text-gray-400 sm:text-left">{edu.field || 'Field of study not specified'}</p>
+                        <p className="mt-3 text-sm text-gray-400 break-words">{edu.field || 'Field of study not specified'}</p>
                       </div>
                     ))}
                   </div>
@@ -520,21 +521,21 @@ export default function Profile() {
               )}
 
               {profile?.experience?.length > 0 && (
-                <div className="bg-[#111111] border border-[#2a2a2a] rounded-3xl p-6 mb-5">
-                  <div className="flex items-center justify-center gap-2 mb-5 text-red-300 font-semibold text-sm uppercase tracking-[0.18em]">
+                <div className="profile-section-card bg-[#111111] border border-[#2a2a2a] rounded-3xl p-7 mb-5">
+                  <div className="flex items-center justify-center gap-2 mb-6 text-red-300 font-semibold text-sm uppercase tracking-[0.18em]">
                     <Briefcase size={16} /> Work experience
                   </div>
-                  <div className="grid gap-4 lg:grid-cols-2">
+                  <div className="grid gap-5 lg:grid-cols-2">
                     {profile.experience.map((exp, index) => (
-                      <div key={index} className="rounded-2xl border border-[#2a2a2a] bg-[#0f0f0f] p-5">
-                        <div className="flex flex-col gap-2 text-center sm:flex-row sm:items-start sm:justify-between sm:text-left">
-                          <div>
-                            <h3 className="text-sm font-semibold text-gray-100">{exp.role || 'No role provided'}</h3>
-                            <p className="text-xs text-gray-500">{exp.company || 'Organization not added'}</p>
+                      <div key={index} className="profile-nested-card rounded-2xl border border-[#2a2a2a] bg-[#0f0f0f] p-6 min-w-0">
+                        <div className="flex flex-col gap-2 text-left sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <h3 className="text-sm font-semibold text-gray-100 break-words">{exp.role || 'No role provided'}</h3>
+                            <p className="text-xs text-gray-500 break-words">{exp.company || 'Organization not added'}</p>
                           </div>
-                          <span className="text-xs text-gray-500">{exp.duration || 'Duration unknown'}</span>
+                          <span className="text-xs text-gray-500 shrink-0">{exp.duration || 'Duration unknown'}</span>
                         </div>
-                        <p className="mt-3 text-center text-sm text-gray-400 sm:text-left">{exp.detail || 'No additional details.'}</p>
+                        <p className="mt-3 text-sm text-gray-400 break-words">{exp.detail || 'No additional details.'}</p>
                       </div>
                     ))}
                   </div>
@@ -546,7 +547,7 @@ export default function Profile() {
               {posts.length === 0 ? (
                 <div className="text-center text-gray-600 py-10 font-mono">// no posts yet</div>
               ) : (
-                <div className="space-y-6">
+                <div className="feed-stack">
                   {posts.map(post => <PostCard key={post.id} post={post} onUpdate={fetchUserPosts} />)}
                 </div>
               )}
